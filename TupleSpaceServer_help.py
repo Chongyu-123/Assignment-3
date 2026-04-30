@@ -95,10 +95,10 @@ def handle_client(client_socket):
             if len(message_buffer) != total_size-3:
                 break
             
-            message = message_buffer.decode().strip() #decode message
+            message = message_buffer.decode().strip() #decode message , turn bytes to str
 
             # Handle the request
-            response = handle_request(message_buffer)
+            response = handle_request(message)
 
             # TASK 2: Build the response string with its size prepended (3 digits + space),
             # then send it. Hint: total size = len(response) + 4. Use sendall().
@@ -160,7 +160,7 @@ def handle_request(message):
                 return f"ok({key},{value}) removed"
             else:
                 increment_stat("error_count") #the key's value is null,fault
-                return f"ERR{key} does not exist"
+                return f"ERR s{key} does not exist"
 
         elif op == "P":
             if len(parts) < 3:  #too short
