@@ -109,7 +109,7 @@ def handle_client(client_socket):
             #formatting
             full_response = f"{total_response_len:03d} {response_content}"
             #send response
-            client_socket.senall(full_response.encode())
+            client_socket.sendall(full_response.encode())
             
     except (socket.error, ValueError):
         pass

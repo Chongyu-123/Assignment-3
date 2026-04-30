@@ -84,6 +84,8 @@ def main():
                     if len(parts) < 3:
                         print(f"{line}: ERR key+value exceeds 970 character limit")
                         continue
+                    key = parts[1]
+                    value = parts[2]
                     total_size = 7 + len(key) + len(value)
                     if total_size > 999:
                         print(f"{line}: ERR Message exceeds max size")
