@@ -45,16 +45,50 @@ def main():
             # X is "R" for READ and "G" for GET.
             # Hint: for READ/GET, size = 6 + len(key). For PUT, size = 7 + len(key) + len(value).
             # Reject lines with invalid format or key+" "+value > 970 chars.
+            try:
+                if cmd == "READ":
+                    if len(parts) < 2:
+                        print(f"{line}: ERR Invalid READ command format")
+                        continue
+                    key = parts[1]
+                    total_size = 6+len(key)
+                    if total_size > 999:
+                        print(f"{line}: ERR key too long,message exceeds max size")
+                        continue
+                    message = f"{total_size:03d} R {key}"
 
+                elif cmd == "GET":
+                    if len(parts) < 2:
+                        print(f"{line}: ERR Invalid GET command format")
+                        continue
+                    key = parts[1]
+                    total_size = 6+len(key)
+                    if total_size > 999:
+                        print(f"{line}: ERR key too long , message exceeds max size")
+                        continue
+                    message = f"{total_size:03d} G {key}"
+
+                elif cmd == "PUT":
+                    if len(parts) < 3:
+                        print(f"{line}: ERR key+value exceeds 970 character limit")
+                        continue
+                    total_size = 7 + len(key) + len(value)
+                    if total_size > 999:
+                        print(f"{line}: ERR Message exceeds max size")
+                        continue
+                    message = f"{total_size:03d} P {key} {value}"
+            except Exception as e:
+                print(f"{line}: ERR Failed to build message - {str(e)}")
+                continue
 
             # TASK 3: Send the message to the server, then receive the response.
             # - Send:    sock.sendall(message.encode())
             # - Receive: first read 3 bytes to get the response size (like the server does).
             #            Then read the remaining (size - 3) bytes to get the response body.
 
+           
 
-            response = response_buffer.decode().strip()
-            print(f"{line}: {response}")
+           
 
     except (socket.error, ValueError) as e:
         print(f"Error: {e}")
