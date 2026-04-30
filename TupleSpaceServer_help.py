@@ -29,18 +29,19 @@ def receive_n(sock, num_bytes):
 
 def increment_stat(stat_name):
     global total_clients, total_operations, read_count, get_count, put_count, error_count
-    if stat_name == "total_clients":
-        total_clients += 1
-    elif stat_name == "total_operations":
-        total_operations += 1
-    elif stat_name == "read_count":
-        read_count += 1
-    elif stat_name == "get_count":
-        get_count += 1
-    elif stat_name == "put_count":
-        put_count += 1
-    elif stat_name == "error_count":
-        error_count += 1
+    with lock:   #protect globol variables
+        if stat_name == "total_clients":
+           total_clients += 1
+        elif stat_name == "total_operations":
+           total_operations += 1
+        elif stat_name == "read_count":
+           read_count += 1
+        elif stat_name == "get_count":
+           get_count += 1
+        elif stat_name == "put_count":
+           put_count += 1
+        elif stat_name == "error_count":
+           error_count += 1
 
 def print_stats():
     while True:
@@ -75,7 +76,7 @@ def handle_client(client_socket):
             # TASK 1: Read the first 3 bytes to get the message size, then read
             # the remaining (size - 3) bytes and decode to a string.
             # Hint: use receive_n(). If nothing arrives, client disconnected — break.
-
+            
 
             # Handle the request
             response = handle_request(message_buffer)
