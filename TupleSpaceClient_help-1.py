@@ -2,6 +2,17 @@ import socket
 import sys
 import os
 
+def receive_n(sock, num_bytes):
+    #get num of bytes
+    data = b""
+    while len(data) < num_bytes:
+        chunk = sock.recv(num_bytes - len(data))
+        if not chunk:
+            break
+        data += chunk
+    return data
+
+
 def main():
     if len(sys.argv) != 4:
         print("Usage: python tuple_space_client.py <server-hostname> <server-port> <input-file>")
@@ -85,9 +96,24 @@ def main():
             # - Send:    sock.sendall(message.encode())
             # - Receive: first read 3 bytes to get the response size (like the server does).
             #            Then read the remaining (size - 3) bytes to get the response body.
+            sock.sendall(message.encode())  #send message too the server
 
+            resp_size_data = receive_n(sock, 3) #read 3 bytes to get total length 
+            if len(resp_size_data) != 3:
+                print(f"{line}: ERR Server disconnected")
+                break
            
-
+            try:   #read information left
+                resp_total_size = int(resp_size_data.decode().strip())
+                resp_body_data = receive_n(sock, resp_total_size - 3)
+                if len(resp_body_data) != resp_total_size - 3:
+                    print(f"{line}: ERR Incomplete response from server")
+                    break
+                response = resp_body_data.decode().strip()
+                print(f"{line}: {response}")
+            except ValueError:
+                print(f"{line}: ERR Invalid response format from server")
+                break
            
 
     except (socket.error, ValueError) as e:
@@ -96,7 +122,8 @@ def main():
     finally:
         # TASK 4: Close the socket when done (already called for you — explain why
         # finally: is the right place to do this even if an error occurs above).
-        sock.close()
+        if sock is not None:
+           sock.close()
 
 if __name__ == "__main__":
     main()
