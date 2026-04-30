@@ -139,26 +139,48 @@ def handle_request(message):
         if op == "R":
             # TASK 3: READ — look up key in tuple_space.
             # Return "OK (<key>, <value>) read" or "ERR <key> does not exist".
-            increment_stat("read_count")
+            if key in tuple_space:
+                value = tuple_space[key]
+                increment_stat("read_count")
+                return f"ok({key},{value}) read"
+            
+            else:
+                increment_stat("error_count")
+                return f"ERR {key} does not exist"
+                
 
 
         elif op == "G":
             # TASK 4: GET — remove key from tuple_space and return its value.
             # Return "OK (<key>, <value>) removed" or "ERR <key> does not exist".
             # Hint: dict.pop(key, None) removes and returns the value, or None if missing.
-            increment_stat("get_count")
-
+            value = tuple_space.pop(key,None)
+            if value is not None:
+                increment_stat("get_count")
+                return f"ok({key},{value}) removed"
+            else:
+                increment_stat("error_count") #the key's value is null,fault
+                return f"ERR{key} does not exist"
 
         elif op == "P":
-            if len(parts) < 3:
+            if len(parts) < 3:  #too short
                 increment_stat("error_count")
                 return "ERR Invalid PUT"
             value = parts[2]
             # TASK 5: PUT — add (key, value) only if key does not already exist.
             # Validate: len(value) <= 999 and len(key + " " + value) <= 970.
             # Return "OK (<key>, <value>) added" or "ERR <key> already exists".
-            increment_stat("put_count")
+            if key in tuple_space: #already exist
+                increment_stat("error_count")
+                return f"ERR {key} already exists"
 
+            if len(value)> 999 or len(key + " " + value) > 970: #too long
+                increment_stat("error_count")
+                return "ERR Invaild value length"
+
+            tuple_space[key] = value #adminted to all requerments,go on  
+            increment_stat("put_count")
+            return f"ok({key},{value}) added"
 
         else:
             increment_stat("error_count")
