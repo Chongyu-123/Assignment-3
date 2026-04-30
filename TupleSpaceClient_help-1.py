@@ -2,6 +2,7 @@ import socket
 import sys
 import os
 
+
 def receive_n(sock, num_bytes):
     #get num of bytes
     data = b""
