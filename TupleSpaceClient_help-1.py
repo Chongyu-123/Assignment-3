@@ -21,9 +21,14 @@ def main():
     # TASK 1: Create a TCP/IP socket and connect it to the server.
     # Hint: socket.socket(socket.AF_INET, socket.SOCK_STREAM) creates the socket.
     # Then call sock.connect((hostname, port)) to connect.
-
-
+    
+    sock = None
     try:
+        #creat TCP socket
+        sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        sock.connect((hostname,port)) #connect to server
+        print(f"Succesefully connected to {hostname}:{port}")
+
         for line in lines:
             line = line.strip()
             if not line:
